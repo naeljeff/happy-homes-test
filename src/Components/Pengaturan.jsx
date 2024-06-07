@@ -1,9 +1,12 @@
 import { useState } from "react";
 
+import PengaturanModal from "../Modal/PengaturanModal";
+
 const Pengaturan = () => {
   // State handler
   const [nama, setNama] = useState("");
   const [rate, setRate] = useState("");
+  const [pengaturanModal, setPengaturanModal] = useState(false);
 
   // Handler function to submit data
   const handleSave = () => {
@@ -11,8 +14,8 @@ const Pengaturan = () => {
     else if (!rate) alert("Please enter a rate");
     else {
       //   Convert rate into int
-
-      alert(`Data Saved: ${nama}, ${rate}`);
+      setPengaturanModal(true);
+      //   console.log(`Data Saved: ${nama}, ${rate}`);
       setNama("");
       setRate("");
     }
@@ -105,6 +108,12 @@ const Pengaturan = () => {
           </div>
         </div>
       </div>
+
+      {/* If Success -> Show modal */}
+      <PengaturanModal
+        show={pengaturanModal}
+        onClose={() => setPengaturanModal(false)}
+      />
     </>
   );
 };
