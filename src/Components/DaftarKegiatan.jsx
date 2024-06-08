@@ -95,17 +95,18 @@ const DaftarKegiatan = () => {
       direction = "descending";
     }
     setSortDatas({ key, direction });
-    sortArrayDatas(key, direction);
+    sortArrayDatas(key, sortDatas.direction);
   };
 
   const sortArrayDatas = (key, direction) => {
     // Copy array then sort by key according to direction
-    const sortedDatas = [...datas].sort((a, b) => {
+    // If a filter is applied
+    const sortedDatas = [...filteredData].sort((a, b) => {
       if (a[key] < b[key]) return direction === "ascending" ? -1 : 1;
       if (a[key] > b[key]) return direction === "ascending" ? 1 : -1;
       return 0;
     });
-    setDatas(sortedDatas);
+    setFilteredData(sortedDatas);
   };
 
   return (
