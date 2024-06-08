@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import PengaturanModal from "../Modal/PengaturanModal";
+import PengaturanModal from "../Modal/ModalSubmitSuccess";
 
 const Pengaturan = () => {
   // State handler
@@ -50,7 +50,7 @@ const Pengaturan = () => {
 
   return (
     <>
-      <div className="flex items-center justify-center mt-28">
+      <div className="flex items-center justify-center mt-24">
         <div className="bg-white shadow-md rounded-lg p-10 w-1/3">
           <div className="mb-4 mt-3">
             <label
@@ -113,6 +113,7 @@ const Pengaturan = () => {
       <PengaturanModal
         show={pengaturanModal}
         onClose={() => setPengaturanModal(false)}
+        message="Data karyawan berhasil diubah!"
       />
     </>
   );

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const PengaturanModal = ({ show, onClose }) => {
+const PengaturanModal = ({ show, onClose, message }) => {
   useEffect(() => {
     if (show) {
       const timer = setTimeout(onClose, 2000);
@@ -39,7 +39,7 @@ const PengaturanModal = ({ show, onClose }) => {
             </div>
           </div>
           <h2 className="text-2xl font-bold mb-2 mt-5">Berhasil</h2>
-          <p className="text-lg">Data karyawan berhasil diubah!</p>
+          <p className="text-lg">{message}</p>
         </div>
       </div>
     </>
