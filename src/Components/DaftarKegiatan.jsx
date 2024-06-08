@@ -1,3 +1,6 @@
+import { IoMdAddCircleOutline } from "react-icons/io";
+import SearchBar from "./SearchBar";
+
 const DaftarKegiatan = () => {
   return (
     <>
@@ -19,15 +22,15 @@ const DaftarKegiatan = () => {
           <div className="flex justify-between">
             <div className="flex items-center mb-4">
               <h3 className="text-lg font-bold">Daftar Kegiatan</h3>
-              <button className="bg-[#F0F6FF] text-[#2775EC] font-bold px-4 py-2 rounded-xl tracking-tighter">
-                Tambah Kegiatan
+              <button className="bg-[#F0F6FF] text-[#2775EC] font-bold ml-4 px-4 py-2 rounded-xl tracking-tighter">
+                <div className="flex">
+                  <IoMdAddCircleOutline className="mt-1 mr-1" />
+                  Tambah Kegiatan
+                </div>
               </button>
             </div>
-            <div className="flex items-center mb-4">
-              <h3 className="text-lg font-bold">Daftar Kegiatan</h3>
-              <button className="bg-[#F0F6FF] text-[#2775EC] font-bold px-4 py-2 rounded-lg">
-                Tambah Kegiatan
-              </button>
+            <div className="flex mb-4">
+              <SearchBar />
             </div>
           </div>
 
