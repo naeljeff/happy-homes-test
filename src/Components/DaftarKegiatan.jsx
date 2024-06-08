@@ -1,7 +1,78 @@
 import { IoMdAddCircleOutline } from "react-icons/io";
-import SearchBar from "./SearchBar";
+import { FaSearch } from "react-icons/fa";
+import { IoFilterSharp } from "react-icons/io5";
+import { useEffect, useState } from "react";
 
 const DaftarKegiatan = () => {
+  // Add logic to fetch data from database
+  const [datas, setDatas] = useState([
+    {
+      judul: "wireframing untuk fitur/flow bidding",
+      namaProyek: "UI Desain",
+      tanggalMulai: "1 Okt 2023",
+      tanggalBerakhir: "1 Okt 2023",
+      waktuMulai: "08:00",
+      waktuBerakhir: "16:00",
+      durasi: "8 Jam",
+    },
+    {
+      judul: "Pembuatan desain sistem",
+      namaProyek: "Dokumentasi",
+      tanggalMulai: "2 Okt 2023",
+      tanggalBerakhir: "2 Okt 2023",
+      waktuMulai: "08:50",
+      waktuBerakhir: "17:30",
+      durasi: "8 Jam 40 menit",
+    },
+    {
+      judul: "desain mockup untuk fitur/flow bidding",
+      namaProyek: "UI Desain",
+      tanggalMulai: "3 Okt 2023",
+      tanggalBerakhir: "4 Okt 2023",
+      waktuMulai: "10:30",
+      waktuBerakhir: "15:00",
+      durasi: "4 Jam 30 menit",
+    },
+  ]);
+
+  // Search data
+  const [searchList, setSearchList] = useState("");
+  const [filteredData, setFilteredData] = useState(datas);
+  const handleSearchInput = (event) => {
+    setSearchList(event.target.value);
+  };
+
+  useEffect(() => {
+    setFilteredData(
+      datas.filter((data) =>
+        data.judul.toLowerCase().includes(searchList.toLowerCase())
+      )
+    );
+  }, [searchList, datas]);
+
+  // Sort table data
+  const [sortDatas, setSortDatas] = useState({ key: null, direction: null });
+
+  const handleSortData = (key) => {
+    // Default ascending
+    let direction = "ascending";
+    if (sortDatas.key === key && sortDatas.direction === "ascending") {
+      direction = "descending";
+    }
+    setSortDatas({ key, direction });
+    sortArrayDatas(key, direction);
+  };
+
+  const sortArrayDatas = (key, direction) => {
+    // Copy array then sort by key according to direction
+    const sortedDatas = [...datas].sort((a, b) => {
+      if (a[key] < b[key]) return direction === "ascending" ? -1 : 1;
+      if (a[key] > b[key]) return direction === "ascending" ? 1 : -1;
+      return 0;
+    });
+    setDatas(sortedDatas);
+  };
+
   return (
     <>
       <div className="p-3 mx-auto">
@@ -29,35 +100,256 @@ const DaftarKegiatan = () => {
                 </div>
               </button>
             </div>
+
+            {/* Search box */}
             <div className="flex mb-4">
-              <SearchBar />
+              <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden shadow-sm focus:outline-none focus-within:border-[#F15858] focus-within:ring-1 focus-within:ring-[#F15858] mr-3">
+                <div className="flex items-center pl-3">
+                  <FaSearch className="text-gray-400" />
+                </div>
+                <input
+                  onChange={handleSearchInput}
+                  type="text"
+                  value={searchList}
+                  className="w-100 pl-4 py-3 px-10 text-slate-700 bg-white rounded-md outline-none focus:ring-0 placeholder:italic"
+                  placeholder="Cari"
+                />
+              </div>
+
+              <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+                <div>
+                  <button className="relative flex items-center p-3">
+                    <IoFilterSharp size={24} className={`text-[#F15858]`} />
+                    {searchList && (
+                      <span className="absolute bg-[#2775EC] border-2 border-white rounded-full w-3 h-3 -top-2.5 right-1 m-1 mt-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr>
-                <th className="py-2">Judul Kegiatan</th>
-                <th className="py-2">Nama Proyek</th>
-                <th className="py-2">Tanggal Mulai</th>
-                <th className="py-2">Tanggal Berakhir</th>
-                <th className="py-2">Waktu Mulai</th>
-                <th className="py-2">Waktu Berakhir</th>
-                <th className="py-2">Durasi</th>
-                <th className="py-2">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="text-center py-4" colSpan="8">
-                  Belum ada kegiatan
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div className="flex flex-col justify-between mt-4">
-            <p>Total Durasi: -</p>
-            <p>Total Pendapatan: -</p>
+          <div className="min-w-full relative overflow-hidden shadow bg-white rounded-lg border border-gray-300">
+            <div className="max-h-96 overflow-auto">
+              <table className="w-full text-md text-left text-slate-900 table-fixed">
+                <thead className="sticky top-0 bg-white">
+                  <tr>
+                    <th
+                      className="py-2 px-4 border-b border-gray-200 text-left border-r"
+                      colSpan="10"
+                    >
+                      <div className="flex items-center">
+                        Judul Kegiatan
+                        <button onClick={() => handleSortData("judul")}>
+                          <svg
+                            class="w-3 h-3 ms-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    <th
+                      className="py-2 px-4 border-b border-gray-200 text-left border-r"
+                      colSpan="4"
+                    >
+                      <div className="flex items-center">
+                        Nama Proyek
+                        <button onClick={() => handleSortData("namaProyek")}>
+                          <svg
+                            class="w-3 h-3 ms-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    <th
+                      className="py-2 px-4 border-b border-gray-200 text-left border-r"
+                      colSpan="4"
+                    >
+                      <div className="flex items-center">
+                        Tanggal Mulai
+                        <button onClick={() => handleSortData("tanggalMulai")}>
+                          <svg
+                            class="w-3 h-3 ms-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    <th
+                      className="py-2 px-4 border-b border-gray-200 text-left border-r"
+                      colSpan="4"
+                    >
+                      <div className="flex items-center">
+                        Tanggal Berakhir
+                        <button
+                          onClick={() => handleSortData("tanggalBerakhir")}
+                        >
+                          <svg
+                            class="w-3 h-3 ms-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    <th
+                      className="py-2 px-4 border-b border-gray-200 text-left border-r"
+                      colSpan="4"
+                    >
+                      <div className="flex items-center">
+                        Waktu Mulai
+                        <button onClick={() => handleSortData("waktuMulai")}>
+                          <svg
+                            class="w-3 h-3 ms-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    <th
+                      className="py-2 px-4 border-b border-gray-200 text-left border-r"
+                      colSpan="4"
+                    >
+                      <div className="flex items-center">
+                        Waktu Berakhir
+                        <button onClick={() => handleSortData("waktuBerakhir")}>
+                          <svg
+                            class="w-3 h-3 ms-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    <th
+                      className="py-2 px-4 border-b border-gray-200 text-left border-r"
+                      colSpan="3"
+                    >
+                      <div className="flex items-center">
+                        Durasi
+                        <button onClick={() => handleSortData("durasi")}>
+                          <svg
+                            class="w-3 h-3 ms-1.5"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M8.574 11.024h6.852a2.075 2.075 0 0 0 1.847-1.086 1.9 1.9 0 0 0-.11-1.986L13.736 2.9a2.122 2.122 0 0 0-3.472 0L6.837 7.952a1.9 1.9 0 0 0-.11 1.986 2.074 2.074 0 0 0 1.847 1.086Zm6.852 1.952H8.574a2.072 2.072 0 0 0-1.847 1.087 1.9 1.9 0 0 0 .11 1.985l3.426 5.05a2.123 2.123 0 0 0 3.472 0l3.427-5.05a1.9 1.9 0 0 0 .11-1.985 2.074 2.074 0 0 0-1.846-1.087Z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </th>
+                    <th
+                      className="py-2 px-4 border-b border-gray-200 text-left"
+                      colSpan="2"
+                    >
+                      Aksi
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* If data is empty */}
+                  {datas.length === 0 ? (
+                    <tr>
+                      <td
+                        className="text-center py-4 font-semibold"
+                        colSpan="35"
+                      >
+                        Belum ada kegiatan
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredData.map((data, index) => (
+                      <tr key={index}>
+                        <td
+                          className="py-2 px-4 border-b border-r border-gray-200"
+                          colSpan="10"
+                        >
+                          {data.judul}
+                        </td>
+                        <td
+                          className="py-2 px-4 border-b border-r border-gray-200"
+                          colSpan="4"
+                        >
+                          {data.namaProyek}
+                        </td>
+                        <td
+                          className="py-2 px-4 border-b border-r border-gray-200"
+                          colSpan="4"
+                        >
+                          {data.tanggalMulai}
+                        </td>
+                        <td
+                          className="py-2 px-4 border-b border-r border-gray-200"
+                          colSpan="4"
+                        >
+                          {data.tanggalBerakhir}
+                        </td>
+                        <td
+                          className="py-2 px-4 border-b border-r border-gray-200"
+                          colSpan="4"
+                        >
+                          {data.waktuMulai}
+                        </td>
+                        <td
+                          className="py-2 px-4 border-b border-r border-gray-200"
+                          colSpan="4"
+                        >
+                          {data.waktuBerakhir}
+                        </td>
+                        <td
+                          className="py-2 px-4 border-b border-r border-gray-200"
+                          colSpan="3"
+                        >
+                          {data.durasi}
+                        </td>
+                        <td
+                          className="py-2 px-4 border-b border-gray-200"
+                          colSpan="2"
+                        >
+                          AKSI
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex flex-col justify-between mt-4">
+              <p>Total Durasi: -</p>
+              <p>Total Pendapatan: -</p>
+            </div>
           </div>
         </div>
       </div>
