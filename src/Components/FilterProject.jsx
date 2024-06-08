@@ -1,26 +1,9 @@
 import { useState } from "react";
 import { IoMdArrowDropdown } from "react-icons/io";
 
-// { isOpen, onClose, projects, onApplyFilter }
-const FilterProject = () => {
+const FilterProject = ({ isOpen, onClose, projects, onApplyFilter }) => {
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [dropdownState, setDropdownState] = useState(false);
-  const projects = ["aasd", "basd", "casd", "dasd", "e", "f"];
-
-  //   const handleSelectProject = (event) => {
-  //     const { value } = event.target;
-  //     if (value && !selectedProjects.includes(value)) {
-  //       setSelectedProjects([...selectedProjects, value]);
-  //     }
-  //   };
-
-  //   const handleRemoveProject = (project) => {
-  //     setSelectedProjects(selectedProjects.filter((p) => p !== project));
-  //   };
-
-  //   const handleApplyFilter = () => {
-  //     onApplyFilter(selectedProjects);
-  //   };
 
   const handleSelectProject = (projects) => {
     setSelectedProjects((prevSelected) =>
@@ -28,6 +11,10 @@ const FilterProject = () => {
         ? prevSelected.filter((p) => p !== projects)
         : [...prevSelected, projects]
     );
+  };
+
+  const handleApplyFilter = () => {
+    onApplyFilter(selectedProjects);
   };
 
   const handleClearFilter = () => {
@@ -38,7 +25,8 @@ const FilterProject = () => {
     setDropdownState(!dropdownState);
   };
 
-  //   if (!isOpen) return null;
+  if (!isOpen) return null;
+
   return (
     <>
       <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
@@ -46,7 +34,7 @@ const FilterProject = () => {
           <div className="flex justify-between items-center mb-4 -mt-2">
             <h1 className="text-xl font-bold">Filter</h1>
             <button
-              //   onClick={onClose}
+              onClick={onClose}
               className="text-3xl text-gray-600 hover:text-[#F15858]"
             >
               &times;
@@ -117,7 +105,7 @@ const FilterProject = () => {
               Hapus Filter
             </button>
             <button
-              onClick=""
+              onClick={handleApplyFilter}
               className="bg-[#F15858] text-white font-bold py-2 px-4 rounded-lg hover:underline hover:underline-offset-4"
             >
               Terapkan

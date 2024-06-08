@@ -24,8 +24,7 @@ function App() {
 
         <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
         {/* Content */}
-        <FilterProject />
-        {/* <div className="mx-auto p-4">{renderContent()}</div> */}
+        <div className="mx-auto p-4">{renderContent()}</div>
       </div>
     </>
   );
