@@ -59,7 +59,6 @@ const DaftarKegiatan = () => {
       selectedProject.includes(data.namaProyek)
     );
     setFilteredProject(filtered);
-    console.log(filteredProject);
     handleCloseFilterModal();
   };
 
@@ -71,12 +70,20 @@ const DaftarKegiatan = () => {
   };
 
   useEffect(() => {
-    setFilteredData(
-      datas.filter((data) =>
-        data.judul.toLowerCase().includes(searchList.toLowerCase())
-      )
-    );
-  }, [searchList, datas]);
+    if (filterApplied > 0) {
+      setFilteredData(
+        filteredProject.filter((data) =>
+          data.judul.toLowerCase().includes(searchList.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredData(
+        datas.filter((data) =>
+          data.judul.toLowerCase().includes(searchList.toLowerCase())
+        )
+      );
+    }
+  }, [searchList, filteredProject, datas, filterApplied]);
 
   // Sort table data
   const [sortDatas, setSortDatas] = useState({ key: null, direction: null });
@@ -151,8 +158,9 @@ const DaftarKegiatan = () => {
                     className="relative flex items-center p-3"
                   >
                     <IoFilterSharp size={24} className={`text-[#F15858]`} />
-                    {filterApplied > 0 ?  <span className="absolute bg-[#2775EC] border-2 border-white rounded-full w-3 h-3 -top-2.5 right-1 m-1 mt-5" /> : null}
-                    
+                    {filterApplied > 0 ? (
+                      <span className="absolute bg-[#2775EC] border-2 border-white rounded-full w-3 h-3 -top-2.5 right-1 m-1 mt-5" />
+                    ) : null}
                   </button>
                 </div>
               </div>
