@@ -6,6 +6,7 @@ import Navigation from "./Navigation/Nav";
 import Header from "./Components/Header";
 import DaftarKegiatan from "./Components/DaftarKegiatan";
 import Pengaturan from "./Components/Pengaturan";
+import FilterProject from "./Components/FilterProject";
 
 function App() {
   // State for navigation
@@ -23,7 +24,8 @@ function App() {
 
         <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
         {/* Content */}
-        <div className="mx-auto p-4">{renderContent()}</div>
+        <FilterProject />
+        {/* <div className="mx-auto p-4">{renderContent()}</div> */}
       </div>
     </>
   );
