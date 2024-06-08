@@ -9,7 +9,7 @@
   font-family: "Nunito", sans-serif;
 }
 
-/* For Modal */
+/* For Modal - Checkmark animation */
 @keyframes stroke {
   100% {
     stroke-dashoffset: 0;
