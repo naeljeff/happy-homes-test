@@ -6,7 +6,6 @@ import Navigation from "./Navigation/Nav";
 import Header from "./Components/Header";
 import DaftarKegiatan from "./Components/DaftarKegiatan";
 import Pengaturan from "./Components/Pengaturan";
-import FilterProject from "./Components/FilterProject";
 
 function App() {
   // State for navigation
