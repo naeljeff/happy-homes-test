@@ -23,9 +23,7 @@ function App() {
 
         <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
         {/* Content */}
-        <div className="container mx-auto p-4">
-          <div className="mt-4">{renderContent()}</div>
-        </div>
+        <div className="mx-auto p-4">{renderContent()}</div>
       </div>
     </>
   );
