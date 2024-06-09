@@ -34,6 +34,8 @@ const TambahKegiatan = ({
   const [editKegiatanModal, setEditKegiatanModal] = useState(false);
 
   useEffect(() => {
+    setAddKegiatanModal(false);
+    setEditKegiatanModal(false);
     if (mode === "edit" && currentActivity) {
       setTanggalMulai(dayjs(currentActivity.tanggalMulai, "M/D/YYYY"));
       setTanggalBerakhir(dayjs(currentActivity.tanggalBerakhir, "M/D/YYYY"));
@@ -49,8 +51,6 @@ const TambahKegiatan = ({
       setJudulKegiatan("");
       setSelectedProject("");
     }
-    setAddKegiatanModal(false);
-    setEditKegiatanModal(false);
   }, [mode, currentActivity]);
 
   const handleTambahKegiatan = () => {
