@@ -9,7 +9,7 @@ import FilterProject from "./FilterProject";
 import TambahProject from "./TambahProject";
 
 const DaftarKegiatan = () => {
-  // Add logic to fetch data from database
+  // Add logic to fetch data from database -> setDatas
   const [datas, setDatas] = useState([
     {
       judul: "wireframing untuk fitur/flow bidding",

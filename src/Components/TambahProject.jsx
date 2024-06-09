@@ -5,10 +5,19 @@ const TambahProject = ({ isOpen, onClose }) => {
 
   //   Add handle save project -> close project on save
   const handleAddProject = () => {
-    console.log(project); // Nanti jadi add to db
+    if (!project) alert("Nama proyek tidak boleh kosong");
+    else {
+      console.log(project); // Nanti jadi add to db
+      setProject("");
+      onClose(true);
+    }
+  };
+
+  const handleCloseAddProject = () => {
     setProject("");
     onClose(true);
   };
+
   if (!isOpen) return null;
 
   return (
@@ -18,7 +27,7 @@ const TambahProject = ({ isOpen, onClose }) => {
           <div className="flex justify-between items-center mb-4 -mt-2">
             <h1 className="text-xl font-bold">Tambah Proyek Baru</h1>
             <button
-              onClick={onClose}
+              onClick={handleCloseAddProject}
               className="text-3xl text-gray-600 hover:text-[#F15858]"
             >
               &times;
@@ -46,7 +55,7 @@ const TambahProject = ({ isOpen, onClose }) => {
           <div class="border-t border-gray-200 mb-3 min-w-full -mx-8"></div>
           <div className="flex justify-end">
             <button
-              onClick={onClose}
+              onClick={handleCloseAddProject}
               className="bg-white text-[#F15858] font-bold py-2 px-4 mr-2 rounded-lg hover:underline hover:underline-offset-4"
             >
               Kembali
