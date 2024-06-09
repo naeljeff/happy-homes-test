@@ -7,6 +7,7 @@ import ItemData from "./ItemData";
 import SortIcon from "./SortIcon";
 import FilterProject from "./FilterProject";
 import TambahKegiatan from "./TambahKegiatan";
+import DeleteKegiatanModal from "../Modal/ModalSubmitSuccess";
 
 const DaftarKegiatan = () => {
   // Add logic to fetch data from database -> setDatas
@@ -66,6 +67,9 @@ const DaftarKegiatan = () => {
   const [currentActivity, setCurrentActivity] = useState(null);
   const [mode, setMode] = useState("add");
 
+  // Modal Config
+  const [deleteKegiatanModal, setDeleteKegiatanMod] = useState(false);
+
   // Add kegiatan
   const [isAddKegiatanOpen, setIsAddKegiatanOpen] = useState(false);
   const handleOpenAddKegiatan = () => {
@@ -88,9 +92,14 @@ const DaftarKegiatan = () => {
 
   // Delete Kegiatan
   const handleDeleteKegiatan = (data) => {
-    const updatedDatas = datas.filter((item) => item !== data);
-    setFilteredData(updatedDatas);
-    setDatas(updatedDatas);
+    setDeleteKegiatanMod(true);
+    setTimeout(() => {
+      const updatedDatas = datas.filter((item) => item !== data);
+      setFilteredData(updatedDatas);
+      setDatas(updatedDatas);
+
+      setDeleteKegiatanMod(false);
+    }, 2000);
   };
 
   // Search data
@@ -347,6 +356,13 @@ const DaftarKegiatan = () => {
         projectsList={projects}
         currentActivity={currentActivity}
         mode={mode}
+      />
+
+      {/* If Success -> Show modal */}
+      <DeleteKegiatanModal
+        show={deleteKegiatanModal}
+        onClose={() => setDeleteKegiatanMod(false)}
+        message="Berhasil menghapus kegiatan!"
       />
     </>
   );

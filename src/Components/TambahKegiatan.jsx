@@ -4,10 +4,12 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { renderTimeViewClock } from "@mui/x-date-pickers/timeViewRenderers";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-
 import { IoMdArrowDropdown } from "react-icons/io";
 
 import TambahProject from "./TambahProject";
+import AddKegiatanModal from "../Modal/ModalSubmitSuccess";
+import EditKegiatanModal from "../Modal/ModalSubmitSuccess";
+
 dayjs.extend(customParseFormat);
 
 const TambahKegiatan = ({
@@ -28,6 +30,8 @@ const TambahKegiatan = ({
   const [judulKegiatan, setJudulKegiatan] = useState("");
   const [selectedProject, setSelectedProject] = useState("");
   const [dropdownState, setDropdownState] = useState(false);
+  const [addKegiatanModal, setAddKegiatanModal] = useState(false);
+  const [editKegiatanModal, setEditKegiatanModal] = useState(false);
 
   useEffect(() => {
     if (mode === "edit" && currentActivity) {
@@ -45,6 +49,8 @@ const TambahKegiatan = ({
       setJudulKegiatan("");
       setSelectedProject("");
     }
+    setAddKegiatanModal(false);
+    setEditKegiatanModal(false);
   }, [mode, currentActivity]);
 
   const handleTambahKegiatan = () => {
@@ -70,15 +76,20 @@ const TambahKegiatan = ({
         namaProyek: selectedProject,
       };
       console.log(data);
-      onClose(true);
 
-      setTanggalMulai(defaultDate);
-      setTanggalBerakhir(defaultDate);
-      setJamMulai(defaultNowTime);
-      setJamBerakhir(defaultTomorrowTime);
-      setJudulKegiatan("");
-      setSelectedProject("");
-      setDropdownState(!dropdownState);
+      if (mode === "add") setAddKegiatanModal(true);
+      else if (mode === "edit") setEditKegiatanModal(true);
+
+      setTimeout(() => {
+        onClose(true);
+        setTanggalMulai(defaultDate);
+        setTanggalBerakhir(defaultDate);
+        setJamMulai(defaultNowTime);
+        setJamBerakhir(defaultTomorrowTime);
+        setJudulKegiatan("");
+        setSelectedProject("");
+        setDropdownState(!dropdownState);
+      }, 2000);
     }
   };
 
@@ -292,7 +303,20 @@ const TambahKegiatan = ({
         isOpen={isAddProjectOpen}
         onClose={handleCloseAddProject}
       />
-      ;
+
+      {/* If Add Success -> Show modal */}
+      <AddKegiatanModal
+        show={addKegiatanModal}
+        onClose={() => setAddKegiatanModal(false)}
+        message="Berhasil menambahkan kegiatan!"
+      />
+
+      {/* If Edit Success -> Show modal */}
+      <EditKegiatanModal
+        show={editKegiatanModal}
+        onClose={() => setEditKegiatanModal(false)}
+        message="Berhasil mengubah kegiatan!"
+      />
     </>
   );
 };
