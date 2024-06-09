@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import ItemData from "./ItemData";
 import SortIcon from "./SortIcon";
 import FilterProject from "./FilterProject";
-import TambahProject from "./TambahProject";
 import TambahKegiatan from "./TambahKegiatan";
 
 const DaftarKegiatan = () => {
@@ -318,7 +317,6 @@ const DaftarKegiatan = () => {
         projects={projects}
         onApplyFilter={handleApplyFilter}
       />
-
       
       <TambahKegiatan
         isOpen={isAddKegiatanOpen}
