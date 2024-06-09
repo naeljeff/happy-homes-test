@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 import PengaturanModal from "../Modal/ModalSubmitSuccess";
 
@@ -8,21 +9,46 @@ const Pengaturan = () => {
   const [rate, setRate] = useState("");
   const [pengaturanModal, setPengaturanModal] = useState(false);
 
+  // Grab data from DB
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const fetchUser = async () => {
+    const res = await axios.get("http://localhost:5000/user");
+    console.log(res.data);
+    setNama(res.data[0].nama);
+    setRate(formatNumber(parseInt(res.data[0].rate).toString()));
+  };
+
+  const updateUser = async (idUser) => {
+    const numericRate = parseFloat(rate.replace(/,/g, ""));
+    try {
+      const res = await axios.put(`http://localhost:5000/user/${idUser}`, {
+        nama,
+        rate: numericRate,
+      });
+      setNama(nama);
+      setRate(rate);
+      console.log("Update response:", res.data);
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
+  };
+
   // Handler function to submit data
   const handleSave = () => {
     if (!nama) alert("Please enter your name");
     else if (!rate) alert("Please enter a rate");
     else {
-      //   Convert rate into int
       setPengaturanModal(true);
-      //   console.log(`Data Saved: ${nama}, ${rate}`);
+      updateUser(1);
       setNama("");
       setRate("");
     }
   };
 
   const handleCancel = () => {
-    console.log("Canceled");
     setNama("");
     setRate("");
   };
@@ -65,7 +91,6 @@ const Pengaturan = () => {
               id="nama"
               value={nama}
               className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-[#F15858] focus:ring-1 focus:ring-[#F15858]"
-              placeholder="Nama"
             />
           </div>
 
@@ -85,7 +110,6 @@ const Pengaturan = () => {
                 id="rate"
                 value={rate}
                 className="w-full py-2 px-3 text-gray-700 bg-white rounded-md outline-none focus:ring-0"
-                placeholder="0"
               />
 
               <span className="px-3 text-gray-400">/Jam</span>

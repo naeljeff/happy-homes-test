@@ -2,6 +2,7 @@ import { IoMdAddCircleOutline } from "react-icons/io";
 import { FaSearch } from "react-icons/fa";
 import { IoFilterSharp } from "react-icons/io5";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 import ItemData from "./ItemData";
 import SortIcon from "./SortIcon";
@@ -11,6 +12,8 @@ import DeleteKegiatanModal from "../Modal/ModalSubmitSuccess";
 
 const DaftarKegiatan = () => {
   // Add logic to fetch data from database -> setDatas
+  
+
   const [datas, setDatas] = useState([
     {
       judul: "wireframing untuk fitur/flow bidding",
@@ -40,6 +43,21 @@ const DaftarKegiatan = () => {
       durasi: "4 Jam 30 menit",
     },
   ]);
+  const [nama, setNama] = useState("");
+  const [rate, setRate] = useState("");
+  // Grab data from DB
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const fetchUser = async () => {
+    const res = await axios.get("http://localhost:5000/user");
+    console.log(res.data)
+    setNama(res.data[0].nama);
+
+    const tempRate = Math.round(parseFloat(res.data[0].rate))
+    setRate(tempRate);
+  };
 
   // DUMMY
   const [projects] = useState(["UI Desain", "Desain Logo"]);
@@ -156,11 +174,11 @@ const DaftarKegiatan = () => {
           <div className="flex my-1 ml-5 py-2">
             <div className="flex flex-col justify-between items-start">
               <h2 className="text-sm text-slate-500">Nama Karyawan</h2>
-              <p className="text-md font-bold">Timothy Pradana</p>
+              <p className="text-md font-bold">{nama}</p>
             </div>
             <div className="flex flex-col justify-between items-start ml-8">
               <h2 className="text-sm text-slate-500">Rate</h2>
-              <p className="text-md font-semibold">Rp 12.000/Jam</p>
+              <p className="text-md font-semibold">Rp. {rate} /Jam</p>
             </div>
           </div>
         </div>
