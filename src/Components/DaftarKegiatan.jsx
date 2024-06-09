@@ -7,6 +7,7 @@ import ItemData from "./ItemData";
 import SortIcon from "./SortIcon";
 import FilterProject from "./FilterProject";
 import TambahProject from "./TambahProject";
+import TambahKegiatan from "./TambahKegiatan";
 
 const DaftarKegiatan = () => {
   // Add logic to fetch data from database -> setDatas
@@ -64,15 +65,18 @@ const DaftarKegiatan = () => {
     handleCloseFilterModal();
   };
 
-  // Add Project
-  const [isAddProjectOpen, setIsAddProjectOpen] = useState(false);
-  const handleOpenAddProject = () => {
-    setIsAddProjectOpen(true);
+  
+
+  // Add kegiatan
+  const [isAddKegiatanOpen, setIsAddKegiatanAddProject] = useState(false);
+  const handleOpenAddKegiatan = () => {
+    setIsAddKegiatanAddProject(true);
   };
 
-  const handleCloseAddProject = () => {
-    setIsAddProjectOpen(false);
+  const handleCloseAddKegiatan = () => {
+    setIsAddKegiatanAddProject(false);
   };
+
   // Search data
   const [searchList, setSearchList] = useState("");
   const [filteredData, setFilteredData] = useState(datas);
@@ -141,7 +145,7 @@ const DaftarKegiatan = () => {
             <div className="flex items-center mb-4">
               <h3 className="text-lg font-bold">Daftar Kegiatan</h3>
               <button
-                onClick={handleOpenAddProject}
+                onClick={handleOpenAddKegiatan}
                 className="bg-[#F0F6FF] text-[#2775EC] font-bold ml-4 px-4 py-2 rounded-xl tracking-tighter"
               >
                 <div className="flex">
@@ -315,10 +319,11 @@ const DaftarKegiatan = () => {
         onApplyFilter={handleApplyFilter}
       />
 
-      <TambahProject
-        isOpen={isAddProjectOpen}
-        onClose={handleCloseAddProject}
-        // newProject
+      
+      <TambahKegiatan
+        isOpen={isAddKegiatanOpen}
+        onClose={handleCloseAddKegiatan}
+        projectsList={projects}
       />
     </>
   );
