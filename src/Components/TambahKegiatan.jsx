@@ -1,27 +1,53 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { renderTimeViewClock } from "@mui/x-date-pickers/timeViewRenderers";
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
 import { IoMdArrowDropdown } from "react-icons/io";
 
 import TambahProject from "./TambahProject";
+dayjs.extend(customParseFormat);
 
-const TambahKegiatan = ({ isOpen, onClose, projectsList }) => {
-  const defaultNowDate = dayjs();
-  const defaultTomorrowDate = dayjs().add(1, "day");
+const TambahKegiatan = ({
+  isOpen,
+  onClose,
+  projectsList,
+  currentActivity,
+  mode = "add",
+}) => {
+  const defaultDate = dayjs();
   const defaultNowTime = dayjs().set("hour", 9).startOf("hour");
   const defaultTomorrowTime = dayjs().set("hour", 17).startOf("hour");
 
-  const [tanggalMulai, setTanggalMulai] = useState(defaultNowDate);
-  const [tanggalBerakhir, setTanggalBerakhir] = useState(defaultTomorrowDate);
-  const [jamMulai, setJamMulai] = useState(defaultNowTime);
-  const [jamBerakhir, setJamBerakhir] = useState(defaultTomorrowTime);
+  const [tanggalMulai, setTanggalMulai] = useState(null);
+  const [tanggalBerakhir, setTanggalBerakhir] = useState(null);
+  const [jamMulai, setJamMulai] = useState(null);
+  const [jamBerakhir, setJamBerakhir] = useState(null);
   const [judulKegiatan, setJudulKegiatan] = useState("");
   const [selectedProject, setSelectedProject] = useState("");
+  const [dropdownState, setDropdownState] = useState(false);
+
+  useEffect(() => {
+    if (mode === "edit" && currentActivity) {
+      setTanggalMulai(dayjs(currentActivity.tanggalMulai, "M/D/YYYY"));
+      setTanggalBerakhir(dayjs(currentActivity.tanggalBerakhir, "M/D/YYYY"));
+      setJamMulai(dayjs(currentActivity.waktuMulai, "hh:mm"));
+      setJamBerakhir(dayjs(currentActivity.waktuBerakhir, "hh:mm"));
+      setJudulKegiatan(currentActivity.judul);
+      setSelectedProject(currentActivity.namaProyek);
+    } else {
+      setTanggalMulai(defaultDate);
+      setTanggalBerakhir(defaultDate);
+      setJamMulai(defaultNowTime);
+      setJamBerakhir(defaultTomorrowTime);
+      setJudulKegiatan("");
+      setSelectedProject("");
+    }
+  }, [mode, currentActivity]);
 
   const handleTambahKegiatan = () => {
-
     if (!tanggalMulai.valueOf()) alert("Tanggal mulai tidak boleh kosong");
     else if (!tanggalBerakhir.valueOf())
       alert("Tanggal berakhir tidak boleh kosong");
@@ -45,8 +71,9 @@ const TambahKegiatan = ({ isOpen, onClose, projectsList }) => {
       };
       console.log(data);
       onClose(true);
-      setTanggalMulai(defaultNowDate);
-      setTanggalBerakhir(defaultNowDate);
+
+      setTanggalMulai(defaultDate);
+      setTanggalBerakhir(defaultDate);
       setJamMulai(defaultNowTime);
       setJamBerakhir(defaultTomorrowTime);
       setJudulKegiatan("");
@@ -56,8 +83,8 @@ const TambahKegiatan = ({ isOpen, onClose, projectsList }) => {
   };
 
   const handleCloseAddKegiatan = () => {
-    setTanggalMulai(defaultNowDate);
-    setTanggalBerakhir(defaultNowDate);
+    setTanggalMulai(defaultDate);
+    setTanggalBerakhir(defaultDate);
     setJamMulai(defaultNowTime);
     setJamBerakhir(defaultTomorrowTime);
     setJudulKegiatan("");
@@ -66,7 +93,6 @@ const TambahKegiatan = ({ isOpen, onClose, projectsList }) => {
     setDropdownState(!dropdownState);
   };
 
-  const [dropdownState, setDropdownState] = useState(false);
   const handleDropdownState = () => {
     setDropdownState(!dropdownState);
   };
@@ -93,7 +119,9 @@ const TambahKegiatan = ({ isOpen, onClose, projectsList }) => {
       <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
         <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl">
           <div className="flex justify-between items-center mb-4 -mt-2">
-            <h1 className="text-xl font-bold">Tambah Kegiatan Baru</h1>
+            <h1 className="text-xl font-bold">
+              {mode === "add" ? "Tambah Kegiatan Baru" : "Edit Kegiatan"}
+            </h1>
             <button
               onClick={handleCloseAddKegiatan}
               className="text-3xl text-gray-600 hover:text-[#F15858]"
@@ -119,11 +147,11 @@ const TambahKegiatan = ({ isOpen, onClose, projectsList }) => {
                       newValue.isAfter(tanggalBerakhir) ||
                       newValue.isSame(tanggalBerakhir, "day")
                     ) {
-                      setTanggalBerakhir(newValue.add(1, "day"));
+                      setTanggalBerakhir(newValue);
                     }
                   }}
-                  defaultValue={defaultNowDate}
-                  minDate={defaultNowDate}
+                  defaultValue={tanggalMulai}
+                  minDate={tanggalMulai}
                   value={tanggalMulai}
                 />
               </div>
@@ -136,8 +164,8 @@ const TambahKegiatan = ({ isOpen, onClose, projectsList }) => {
                     textField: { size: "medium", color: "error" },
                   }}
                   onChange={(newValue) => setTanggalBerakhir(newValue)}
-                  defaultValue={defaultTomorrowDate}
-                  minDate={tanggalMulai.add(1, "day")}
+                  defaultValue={tanggalBerakhir}
+                  minDate={tanggalMulai}
                   value={tanggalBerakhir}
                 />
               </div>

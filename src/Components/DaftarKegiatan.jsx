@@ -14,8 +14,8 @@ const DaftarKegiatan = () => {
     {
       judul: "wireframing untuk fitur/flow bidding",
       namaProyek: "UI Desain",
-      tanggalMulai: "1 Okt 2023",
-      tanggalBerakhir: "1 Okt 2023",
+      tanggalMulai: "10/1/2023",
+      tanggalBerakhir: "10/1/2023",
       waktuMulai: "08:00",
       waktuBerakhir: "16:00",
       durasi: "8 Jam",
@@ -23,8 +23,8 @@ const DaftarKegiatan = () => {
     {
       judul: "Pembuatan desain sistem",
       namaProyek: "Dokumentasi",
-      tanggalMulai: "2 Okt 2023",
-      tanggalBerakhir: "2 Okt 2023",
+      tanggalMulai: "10/2/2023",
+      tanggalBerakhir: "10/3/2023",
       waktuMulai: "08:50",
       waktuBerakhir: "17:30",
       durasi: "8 Jam 40 menit",
@@ -32,8 +32,8 @@ const DaftarKegiatan = () => {
     {
       judul: "desain mockup untuk fitur/flow bidding",
       namaProyek: "UI Desain",
-      tanggalMulai: "3 Okt 2023",
-      tanggalBerakhir: "4 Okt 2023",
+      tanggalMulai: "10/3/2023",
+      tanggalBerakhir: "10/10/2023",
       waktuMulai: "10:30",
       waktuBerakhir: "15:00",
       durasi: "4 Jam 30 menit",
@@ -43,7 +43,6 @@ const DaftarKegiatan = () => {
   // DUMMY
   const [projects] = useState(["UI Desain", "Desain Logo"]);
   // Filter
-  const [filteredProject, setFilteredProject] = useState(datas);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [filterApplied, setFilteredApplied] = useState(0);
 
@@ -57,23 +56,41 @@ const DaftarKegiatan = () => {
 
   const handleApplyFilter = (selectedProject) => {
     setFilteredApplied(selectedProject.length);
-    const filtered = datas.filter((data) =>
+    const filtered = filteredData.filter((data) =>
       selectedProject.includes(data.namaProyek)
     );
-    setFilteredProject(filtered);
+    setFilteredData(filtered);
     handleCloseFilterModal();
   };
 
-  
+  const [currentActivity, setCurrentActivity] = useState(null);
+  const [mode, setMode] = useState("add");
 
   // Add kegiatan
-  const [isAddKegiatanOpen, setIsAddKegiatanAddProject] = useState(false);
+  const [isAddKegiatanOpen, setIsAddKegiatanOpen] = useState(false);
   const handleOpenAddKegiatan = () => {
-    setIsAddKegiatanAddProject(true);
+    setMode("add");
+    setCurrentActivity(null);
+    setIsAddKegiatanOpen(true);
   };
 
   const handleCloseAddKegiatan = () => {
-    setIsAddKegiatanAddProject(false);
+    setIsAddKegiatanOpen(false);
+  };
+
+  // Edit Kegiatan
+  const handleOpenEditKegiatan = (data) => {
+    console.log(data);
+    setMode("edit");
+    setCurrentActivity(data);
+    setIsAddKegiatanOpen(true);
+  };
+
+  // Delete Kegiatan
+  const handleDeleteKegiatan = (data) => {
+    const updatedDatas = datas.filter((item) => item !== data);
+    setFilteredData(updatedDatas);
+    setDatas(updatedDatas);
   };
 
   // Search data
@@ -86,7 +103,7 @@ const DaftarKegiatan = () => {
   useEffect(() => {
     if (filterApplied > 0) {
       setFilteredData(
-        filteredProject.filter((data) =>
+        filteredData.filter((data) =>
           data.judul.toLowerCase().includes(searchList.toLowerCase())
         )
       );
@@ -97,7 +114,7 @@ const DaftarKegiatan = () => {
         )
       );
     }
-  }, [searchList, filteredProject, datas, filterApplied]);
+  }, [searchList, datas, filterApplied, filteredData]);
 
   // Sort table data
   const [sortDatas, setSortDatas] = useState({ key: null, direction: null });
@@ -290,7 +307,13 @@ const DaftarKegiatan = () => {
                     </tr>
                   ) : (
                     filteredData.map((data, index) => (
-                      <ItemData index={index} data={data} />
+                      <ItemData
+                        key={index}
+                        index={index}
+                        data={data}
+                        onEdit={handleOpenEditKegiatan}
+                        onDelete={handleDeleteKegiatan}
+                      />
                     ))
                   )}
                 </tbody>
@@ -317,11 +340,13 @@ const DaftarKegiatan = () => {
         projects={projects}
         onApplyFilter={handleApplyFilter}
       />
-      
+
       <TambahKegiatan
         isOpen={isAddKegiatanOpen}
         onClose={handleCloseAddKegiatan}
         projectsList={projects}
+        currentActivity={currentActivity}
+        mode={mode}
       />
     </>
   );
