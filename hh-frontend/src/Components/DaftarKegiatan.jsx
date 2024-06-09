@@ -123,7 +123,7 @@ const DaftarKegiatan = () => {
         )
       );
     }
-  }, [searchList, datas, filterApplied, filteredData]);
+  }, []);
 
   // Sort table data
   const [sortDatas, setSortDatas] = useState({ key: null, direction: null });

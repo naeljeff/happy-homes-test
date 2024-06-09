@@ -5,8 +5,8 @@
     "license": "MIT",
     "scripts": {
       "start": "concurrently \"npm run server\" \"npm run client\"",
-      "server": "cd myapp-backend && nodemon index.js",
-      "client": "cd myapp-frontend && npm start"
+      "server": "cd hh-backend && nodemon index.js",
+      "client": "cd hh-frontend && npm start"
     },
     "dependencies": {
       "concurrently": "^7.0.0"
