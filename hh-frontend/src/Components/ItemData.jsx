@@ -8,16 +8,20 @@ dayjs.extend(customParseFormat);
 const ItemData = ({ index, data, onEdit, onDelete }) => {
   const tanggalMulai = dayjs(data.tanggalmulai).format("DD/MM/YYYY");
   const tanggalBerakhir = dayjs(data.tanggalberakhir).format("DD/MM/YYYY");
-  const waktuMulai = dayjs(data.waktumulai, "HH:mm:ss").format("HH:mm")
-  const waktuBerakhir = dayjs(data.waktuberakhir, "HH:mm:ss").format("HH:mm")
+  const waktuMulai = dayjs(data.waktumulai, "HH:mm:ss").format("HH:mm");
+  const waktuBerakhir = dayjs(data.waktuberakhir, "HH:mm:ss").format("HH:mm");
+  let durasi = 0
+  // Format durasi
+  if (data.durasi % 60 === 0) {
+    durasi = `${data.durasi / 60} Jam`;
+  } else {
+    durasi = `${Math.floor(data.durasi / 60)} Jam ${data.durasi % 60} Menit`;
+  }
 
   return (
     <>
       <tr key={index} className="border-b border-gray-200">
-        <td
-          className="py-2 px-4 border-r border-gray-200"
-          colSpan="10"
-        >
+        <td className="py-2 px-4 border-r border-gray-200" colSpan="10">
           {data.judulkegiatan}
         </td>
         <td className="py-2 px-4 border-r border-gray-200" colSpan="4">
@@ -36,7 +40,7 @@ const ItemData = ({ index, data, onEdit, onDelete }) => {
           {waktuBerakhir}
         </td>
         <td className="py-2 px-4 border-r border-gray-200" colSpan="3">
-          {data.durasi}
+          {durasi}
         </td>
         <td className="flex py-2 px-4 -ml-1 " colSpan="2">
           <button

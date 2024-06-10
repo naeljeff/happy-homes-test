@@ -104,10 +104,10 @@ const TambahKegiatan = ({
     const jMulai = jamMulai.format("HH:mm");
     const jBerakhir = jamBerakhir.format("HH:mm");
 
-    console.log(tMulai)
-    console.log(tBerakhir)
-    console.log(jMulai)
-    console.log(jBerakhir)
+    console.log(tMulai);
+    console.log(tBerakhir);
+    console.log(jMulai);
+    console.log(jBerakhir);
 
     try {
       const res = await axios.put(
@@ -145,51 +145,25 @@ const TambahKegiatan = ({
       const dateStart = `${tMulai} ${jMulai}`;
       const dateEnd = `${tBerakhir} ${jBerakhir}`;
 
-      const combinedStart = dayjs(dateStart, "MM/DD/YYYY HH:mm");
-      const combinedEnd = dayjs(dateEnd, "MM/DD/YYYY HH:mm");
+      const combinedStart = dayjs(dateStart, "DD/MM/YYYY HH:mm");
+      const combinedEnd = dayjs(dateEnd, "DD/MM/YYYY HH:mm");
       const totalDuration = dayjs.duration(combinedEnd.diff(combinedStart));
-      const totalMinutes = totalDuration.asMinutes();
-
-      const workStart = dayjs(`${tMulai} 09:00`, "MM/DD/YYYY HH:mm");
-      const workEnd = dayjs(`${tMulai} 17:00`, "MM/DD/YYYY HH:mm");
-
-      let workDurationInMinutes = 0;
-      let overtimeDurationInMinutes = 0;
-
-      if (combinedStart.isBefore(workEnd) && combinedEnd.isAfter(workStart)) {
-        const effectiveStart = combinedStart.isBefore(workStart)
-          ? workStart
-          : combinedStart;
-        const effectiveEnd = combinedEnd.isAfter(workEnd)
-          ? workEnd
-          : combinedEnd;
-        workDurationInMinutes = dayjs
-          .duration(effectiveEnd.diff(effectiveStart))
-          .asMinutes();
-      }
-
-      if (combinedStart.isBefore(workStart)) {
-        overtimeDurationInMinutes += dayjs
-          .duration(workStart.diff(combinedStart))
-          .asMinutes();
-      }
-      if (combinedEnd.isAfter(workEnd)) {
-        overtimeDurationInMinutes += dayjs
-          .duration(combinedEnd.diff(workEnd))
-          .asMinutes();
-      }
-
-      // Calculate just overtime -> I will assume 08:00 - 16:00 still counts as work time even though it's outside work hour, because minimum duration has to be 8 hours
-      durasi = workDurationInMinutes + overtimeDurationInMinutes;
-
-      // console.log(data);
+      durasi = totalDuration.asMinutes();
+      console.log(combinedStart)
+      console.log(combinedEnd)
+      console.log(totalDuration)
+      console.log(durasi)
 
       if (mode.action === "add") {
-        addKegiatan();
         setAddKegiatanModal(true);
+        setTimeout(() => {
+          addKegiatan();
+        }, 2000);
       } else if (mode.action === "edit") {
-        editKegiatan(idKegiatan);
         setEditKegiatanModal(true);
+        setTimeout(() => {
+          editKegiatan(idKegiatan);
+        }, 2000);
       }
 
       setTimeout(() => {

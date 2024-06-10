@@ -35,7 +35,7 @@ const TambahProject = ({ isOpen, onClose }) => {
   const handleAddProject = () => {
     console.log(projectsList);
     if (!project) alert("Nama proyek tidak boleh kosong");
-    else if (projectsList.some((p) => p.namaproyek === project)) {
+    else if (projectsList.some((p) => p.namaproyek.toLowerCase() === project.toLowerCase())) {
       alert("Nama proyek sudah ada");
     } else {
       addProject();

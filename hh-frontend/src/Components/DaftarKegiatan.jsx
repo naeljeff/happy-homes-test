@@ -40,6 +40,8 @@ const DaftarKegiatan = () => {
 
   // Fetch Data
   const [datas, setDatas] = useState([]);
+  const [totalBiaya, setTotalBiaya] = useState(null);
+  const [totalDurasi, setTotalDurasi] = useState(null);
   useEffect(() => {
     fetchData();
   }, [datas]);
@@ -53,6 +55,38 @@ const DaftarKegiatan = () => {
       console.log(`Error fetching data: ${error.message}`);
     }
   };
+
+  // New useEffect for calculating totalBiaya
+  useEffect(() => {
+    const currRate = parseFloat(rate.replace(".", "")) / 60;
+    let newTotalBiaya = 0;
+
+    datas.forEach((data) => {
+      if (data.durasi > 480) {
+        const tempBiayaOvertime = (data.durasi - 480) * currRate * 0.3;
+        const tempBiayaNormal = 480 * currRate;
+        newTotalBiaya += tempBiayaNormal + tempBiayaOvertime;
+      } else {
+        const tempBiayaNormal = 480 * currRate;
+        newTotalBiaya += tempBiayaNormal;
+      }
+    });
+
+    let tempDurasi = 0;
+    datas.forEach((data) => {
+      tempDurasi += data.durasi;
+    });
+
+    if (tempDurasi % 60 === 0) {
+      setTotalDurasi(`${tempDurasi / 60} Jam`);
+    } else {
+      setTotalDurasi(
+        `${Math.floor(tempDurasi / 60)} Jam ${tempDurasi % 60} Menit`
+      );
+    }
+
+    setTotalBiaya(newTotalBiaya);
+  }, [datas, rate]);
 
   // Fetch Project
   const [projects, setProjects] = useState([]);
@@ -68,6 +102,26 @@ const DaftarKegiatan = () => {
       console.log(`Error fetching project: ${error.message}`);
     }
   };
+
+  // Search data
+  const [searchList, setSearchList] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+
+  useEffect(() => {
+    if (filterApplied > 0) {
+      setFilteredData(
+        filteredData.filter((data) =>
+          data.judulkegiatan.toLowerCase().includes(searchList.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredData(
+        datas.filter((data) =>
+          data.judulkegiatan.toLowerCase().includes(searchList.toLowerCase())
+        )
+      );
+    }
+  }, [searchList, datas, filteredData]);
 
   // Filter
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -132,39 +186,6 @@ const DaftarKegiatan = () => {
     }, 2000);
   };
 
-  // Search data
-  const [searchList, setSearchList] = useState("");
-  const [filteredData, setFilteredData] = useState([]);
-  const handleSearchInput = (event) => {
-    setSearchList(event.target.value);
-  };
-
-  // useEffect(() => {
-  //   console.log(datas);
-  //   console.log(filteredData);
-  //   console.log(datas);
-  //   if (filterApplied > 0) {
-  //     setFilteredData(
-  //       filteredData.filter((data) =>
-  //         data.judul.toLowerCase().includes(searchList.toLowerCase())
-  //       )
-  //     );
-  //   } else {
-  //     setFilteredData(
-  //       datas.map((data) =>
-  //         data.filter((item) =>
-  //           item
-  //         )
-  //       )
-  //     );
-  //   }
-  // }, [searchList]);
-  // useEffect(() => {
-  //   setFilteredData(
-  //     datas.map((data) => data.judulkegiatan.toLowerCase().includes(searchList.toLowerCase()))
-  //   )
-  // }, [searchList])
-
   // Sort table data
   const [sortDatas, setSortDatas] = useState({ key: null, direction: null });
 
@@ -227,7 +248,7 @@ const DaftarKegiatan = () => {
                   <FaSearch className="text-gray-400" />
                 </div>
                 <input
-                  onChange={handleSearchInput}
+                  onChange={(event) => setSearchList(event.target.value)}
                   type="text"
                   value={searchList}
                   className="w-100 pl-4 py-3 px-10 text-slate-700 bg-white rounded-md outline-none focus:ring-0 placeholder:italic"
@@ -262,7 +283,7 @@ const DaftarKegiatan = () => {
                     >
                       <div className="flex items-center">
                         Judul Kegiatan
-                        <button onClick={() => handleSortData("judul")}>
+                        <button onClick={() => handleSortData("judulkegiatan")}>
                           <SortIcon />
                         </button>
                       </div>
@@ -273,7 +294,7 @@ const DaftarKegiatan = () => {
                     >
                       <div className="flex items-center">
                         Nama Proyek
-                        <button onClick={() => handleSortData("namaProyek")}>
+                        <button onClick={() => handleSortData("namaproyek")}>
                           <SortIcon />
                         </button>
                       </div>
@@ -284,7 +305,7 @@ const DaftarKegiatan = () => {
                     >
                       <div className="flex items-center">
                         Tanggal Mulai
-                        <button onClick={() => handleSortData("tanggalMulai")}>
+                        <button onClick={() => handleSortData("tanggalmulai")}>
                           <SortIcon />
                         </button>
                       </div>
@@ -296,7 +317,7 @@ const DaftarKegiatan = () => {
                       <div className="flex items-center">
                         Tanggal Berakhir
                         <button
-                          onClick={() => handleSortData("tanggalBerakhir")}
+                          onClick={() => handleSortData("tanggalberakhir")}
                         >
                           <SortIcon />
                         </button>
@@ -308,7 +329,7 @@ const DaftarKegiatan = () => {
                     >
                       <div className="flex items-center">
                         Waktu Mulai
-                        <button onClick={() => handleSortData("waktuMulai")}>
+                        <button onClick={() => handleSortData("waktumulai")}>
                           <SortIcon />
                         </button>
                       </div>
@@ -319,7 +340,7 @@ const DaftarKegiatan = () => {
                     >
                       <div className="flex items-center">
                         Waktu Berakhir
-                        <button onClick={() => handleSortData("waktuBerakhir")}>
+                        <button onClick={() => handleSortData("waktuberakhir")}>
                           <SortIcon />
                         </button>
                       </div>
@@ -355,7 +376,7 @@ const DaftarKegiatan = () => {
                       </td>
                     </tr>
                   ) : (
-                    datas.map((data) => (
+                    filteredData.map((data) => (
                       <ItemData
                         index={data.idkegiatan}
                         data={data}
@@ -371,11 +392,15 @@ const DaftarKegiatan = () => {
             <div className="flex flex-col justify-between p-4 mt-4 bg-[#F7F8FB]">
               <div className="flex justify-between text-[#2775EC] font-semibold text-md tracking-tighter">
                 <p>Total Durasi: </p>
-                <p>8 Jam 50 Menit</p>
+                <p>{totalDurasi ? totalDurasi : "-"}</p>
               </div>
               <div className="flex justify-between text-[#2775EC] font-bold text-lg tracking-tighter mt-1">
                 <p>Total Pendatapatan:</p>
-                <p>Rp 153.000</p>
+                <p>
+                  {totalBiaya
+                    ? `Rp. ${formatNumber(totalBiaya.toString())}`
+                    : "-"}
+                </p>
               </div>
             </div>
           </div>
