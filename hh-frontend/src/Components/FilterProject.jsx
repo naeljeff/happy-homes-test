@@ -1,24 +1,30 @@
 import { useEffect, useState } from "react";
 import { IoMdArrowDropdown } from "react-icons/io";
 
-const FilterProject = ({ isOpen, onClose, projects, onApplyFilter }) => {
+const FilterProject = ({ isOpen, onClose, projects, onApply }) => {
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [dropdownState, setDropdownState] = useState(false);
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedProjects([]);
+    }
+  }, [isOpen]);
 
-  const handleSelectProject = (projects) => {
+  const handleSelectProject = (project) => {
     setSelectedProjects((prevSelected) =>
-      prevSelected.includes(projects)
-        ? prevSelected.filter((p) => p !== projects)
-        : [...prevSelected, projects]
+      prevSelected.includes(project)
+        ? prevSelected.filter((p) => p !== project)
+        : [...prevSelected, project]
     );
   };
 
   const handleApplyFilter = () => {
-    onApplyFilter(selectedProjects);
+    onApply(selectedProjects);
   };
 
   const handleClearFilter = () => {
     setSelectedProjects([]);
+    onApply([]);
   };
 
   const handleDropdownState = () => {

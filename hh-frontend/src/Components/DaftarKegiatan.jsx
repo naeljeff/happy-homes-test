@@ -50,6 +50,7 @@ const DaftarKegiatan = () => {
     try {
       const res = await axios.get("http://localhost:5000/api/v1/kegiatan");
       setDatas(res.data);
+      setFilteredData(res.data);
       // console.log(res.data);
     } catch (error) {
       console.log(`Error fetching data: ${error.message}`);
@@ -106,26 +107,35 @@ const DaftarKegiatan = () => {
   // Search data
   const [searchList, setSearchList] = useState("");
   const [filteredData, setFilteredData] = useState([]);
+  const [filterApplied, setFilteredApplied] = useState(0);
 
   useEffect(() => {
-    if (filterApplied > 0) {
-      setFilteredData(
-        filteredData.filter((data) =>
-          data.judulkegiatan.toLowerCase().includes(searchList.toLowerCase())
-        )
-      );
-    } else {
-      setFilteredData(
-        datas.filter((data) =>
-          data.judulkegiatan.toLowerCase().includes(searchList.toLowerCase())
-        )
+    filterAndSearchData();
+  }, [searchList, datas, filterApplied]);
+
+  const filterAndSearchData = () => {
+    console.log("Datas before filtering:", datas);
+    console.log("Filter applied:", filterApplied);
+    console.log("Search list:", searchList);
+
+    let tempData = datas;
+
+    if (filterApplied.length > 0) {
+      tempData = tempData.filter((data) =>
+        filterApplied.includes(data.namaProyek)
       );
     }
-  }, [searchList, datas, filteredData]);
+
+    if (searchList) {
+      tempData = tempData.filter((data) =>
+        data.judulkegiatan.toLowerCase().includes(searchList.toLowerCase())
+      );
+    }
+    setFilteredData(tempData);
+  };
 
   // Filter
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [filterApplied, setFilteredApplied] = useState(0);
 
   const handleOpenFilter = () => {
     setIsFilterModalOpen(true);
@@ -138,7 +148,7 @@ const DaftarKegiatan = () => {
   const handleApplyFilter = (selectedProject) => {
     setFilteredApplied(selectedProject.length);
     const filtered = filteredData.filter((data) =>
-      selectedProject.includes(data.namaProyek)
+      selectedProject.includes(data.namaproyek)
     );
     setFilteredData(filtered);
     handleCloseFilterModal();
@@ -148,7 +158,7 @@ const DaftarKegiatan = () => {
   const [mode, setMode] = useState({ action: "add", key: Date.now() });
 
   // Modal Config
-  const [deleteKegiatanModal, setDeleteKegiatanMod] = useState(false);
+  const [deleteKegiatanModal, setDeleteKegiatanModal] = useState(false);
 
   // Add kegiatan
   const [isAddKegiatanOpen, setIsAddKegiatanOpen] = useState(false);
@@ -179,10 +189,10 @@ const DaftarKegiatan = () => {
     }
   };
   const handleDeleteKegiatan = (data) => {
-    setDeleteKegiatanMod(true);
+    setDeleteKegiatanModal(true);
     setTimeout(() => {
       deleteKegiatan(data.idkegiatan);
-      setDeleteKegiatanMod(false);
+      setDeleteKegiatanModal(false);
     }, 2000);
   };
 
@@ -425,7 +435,7 @@ const DaftarKegiatan = () => {
       {/* If Success -> Show modal */}
       <DeleteKegiatanModal
         show={deleteKegiatanModal}
-        onClose={() => setDeleteKegiatanMod(false)}
+        onClose={() => setDeleteKegiatanModal(false)}
         message="Berhasil menghapus kegiatan!"
       />
     </>
