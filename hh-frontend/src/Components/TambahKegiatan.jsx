@@ -4,6 +4,7 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { renderTimeViewClock } from "@mui/x-date-pickers/timeViewRenderers";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import duration from "dayjs/plugin/duration";
 import { IoMdArrowDropdown } from "react-icons/io";
 import axios from "axios";
 
@@ -12,13 +13,14 @@ import AddKegiatanModal from "../Modal/ModalSubmitSuccess";
 import EditKegiatanModal from "../Modal/ModalSubmitSuccess";
 
 dayjs.extend(customParseFormat);
+dayjs.extend(duration);
 
 const TambahKegiatan = ({
   isOpen,
   onClose,
   projectsList,
   currentActivity,
-  mode = "add",
+  mode,
 }) => {
   const defaultDate = dayjs();
   const defaultNowTime = dayjs().set("hour", 9).startOf("hour");
@@ -33,17 +35,35 @@ const TambahKegiatan = ({
   const [dropdownState, setDropdownState] = useState(false);
   const [addKegiatanModal, setAddKegiatanModal] = useState(false);
   const [editKegiatanModal, setEditKegiatanModal] = useState(false);
+  const [idProyek, setIdProyek] = useState(null);
+  const [idKegiatan, setIdKegiatan] = useState(null);
+  let durasi = 0;
 
   useEffect(() => {
     setAddKegiatanModal(false);
     setEditKegiatanModal(false);
-    if (mode === "edit" && currentActivity) {
-      setTanggalMulai(dayjs(currentActivity.tanggalMulai, "M/D/YYYY"));
-      setTanggalBerakhir(dayjs(currentActivity.tanggalBerakhir, "M/D/YYYY"));
-      setJamMulai(dayjs(currentActivity.waktuMulai, "hh:mm"));
-      setJamBerakhir(dayjs(currentActivity.waktuBerakhir, "hh:mm"));
-      setJudulKegiatan(currentActivity.judul);
-      setSelectedProject(currentActivity.namaProyek);
+    if (mode.action === "edit" && currentActivity) {
+      setIdKegiatan(currentActivity.idkegiatan);
+      setTanggalMulai(
+        dayjs(
+          dayjs(currentActivity.tanggalmulai).format("DD/MM/YYYY"),
+          "M/D/YYYY"
+        )
+      );
+      setTanggalBerakhir(
+        dayjs(
+          dayjs(currentActivity.tanggalberakhir).format("DD/MM/YYYY"),
+          "M/D/YYYY"
+        )
+      );
+      setJamMulai(
+        dayjs(dayjs(currentActivity.waktumulai, "HH:mm:ss").format())
+      );
+      setJamBerakhir(
+        dayjs(dayjs(currentActivity.waktuberakhir, "HH:mm:ss").format())
+      );
+      setJudulKegiatan(currentActivity.judulkegiatan);
+      setSelectedProject(currentActivity.namaproyek);
     } else {
       setTanggalMulai(defaultDate);
       setTanggalBerakhir(defaultDate);
@@ -54,6 +74,60 @@ const TambahKegiatan = ({
     }
   }, [mode, currentActivity]);
 
+  const addKegiatan = async () => {
+    const idproyek = idProyek;
+    const tMulai = tanggalMulai.format("DD/MM/YYYY");
+    const tBerakhir = tanggalBerakhir.format("DD/MM/YYYY");
+    const jMulai = jamMulai.format("HH:mm");
+    const jBerakhir = jamBerakhir.format("HH:mm");
+
+    try {
+      const res = await axios.post("http://localhost:5000/api/v1/kegiatan", {
+        judulKegiatan,
+        tMulai,
+        tBerakhir,
+        jMulai,
+        jBerakhir,
+        durasi,
+        idproyek,
+      });
+      console.log(res.data);
+    } catch (error) {
+      console.log(`Error adding new kegiatan: ${error.message}`);
+    }
+  };
+
+  const editKegiatan = async (idKegiatan) => {
+    const idproyek = idProyek;
+    const tMulai = tanggalMulai.format("DD/MM/YYYY");
+    const tBerakhir = tanggalBerakhir.format("DD/MM/YYYY");
+    const jMulai = jamMulai.format("HH:mm");
+    const jBerakhir = jamBerakhir.format("HH:mm");
+
+    console.log(tMulai)
+    console.log(tBerakhir)
+    console.log(jMulai)
+    console.log(jBerakhir)
+
+    try {
+      const res = await axios.put(
+        `http://localhost:5000/api/v1/kegiatan/${idKegiatan}`,
+        {
+          judulKegiatan,
+          idproyek,
+          tMulai,
+          tBerakhir,
+          jMulai,
+          jBerakhir,
+          durasi,
+        }
+      );
+      console.log(res.data);
+    } catch (error) {
+      console.log(`Error updating kegiatan: ${error.message}`);
+    }
+  };
+
   const handleTambahKegiatan = () => {
     if (!tanggalMulai.valueOf()) alert("Tanggal mulai tidak boleh kosong");
     else if (!tanggalBerakhir.valueOf())
@@ -63,23 +137,60 @@ const TambahKegiatan = ({
     else if (!judulKegiatan) alert("Judul kegiatan tidak boleh kosong");
     else if (!selectedProject) alert("Project tidak boleh kosong");
     else {
-      const tMulai = tanggalMulai.format("MM/DD/YYYY");
-      const tBerakhir = tanggalBerakhir.format("MM/DD/YYYY");
-      const jMulai = jamMulai.format("hh:mm");
-      const jBerakhir = jamBerakhir.format("hh:mm");
+      const tMulai = tanggalMulai.format("DD/MM/YYYY");
+      const tBerakhir = tanggalBerakhir.format("DD/MM/YYYY");
+      const jMulai = jamMulai.format("HH:mm");
+      const jBerakhir = jamBerakhir.format("HH:mm");
 
-      const data = {
-        tanggalMulai: tMulai,
-        tanggalBerakhir: tBerakhir,
-        waktuMulai: jMulai,
-        waktuBerakhir: jBerakhir,
-        judul: judulKegiatan,
-        namaProyek: selectedProject,
-      };
-      console.log(data);
+      const dateStart = `${tMulai} ${jMulai}`;
+      const dateEnd = `${tBerakhir} ${jBerakhir}`;
 
-      if (mode === "add") setAddKegiatanModal(true);
-      else if (mode === "edit") setEditKegiatanModal(true);
+      const combinedStart = dayjs(dateStart, "MM/DD/YYYY HH:mm");
+      const combinedEnd = dayjs(dateEnd, "MM/DD/YYYY HH:mm");
+      const totalDuration = dayjs.duration(combinedEnd.diff(combinedStart));
+      const totalMinutes = totalDuration.asMinutes();
+
+      const workStart = dayjs(`${tMulai} 09:00`, "MM/DD/YYYY HH:mm");
+      const workEnd = dayjs(`${tMulai} 17:00`, "MM/DD/YYYY HH:mm");
+
+      let workDurationInMinutes = 0;
+      let overtimeDurationInMinutes = 0;
+
+      if (combinedStart.isBefore(workEnd) && combinedEnd.isAfter(workStart)) {
+        const effectiveStart = combinedStart.isBefore(workStart)
+          ? workStart
+          : combinedStart;
+        const effectiveEnd = combinedEnd.isAfter(workEnd)
+          ? workEnd
+          : combinedEnd;
+        workDurationInMinutes = dayjs
+          .duration(effectiveEnd.diff(effectiveStart))
+          .asMinutes();
+      }
+
+      if (combinedStart.isBefore(workStart)) {
+        overtimeDurationInMinutes += dayjs
+          .duration(workStart.diff(combinedStart))
+          .asMinutes();
+      }
+      if (combinedEnd.isAfter(workEnd)) {
+        overtimeDurationInMinutes += dayjs
+          .duration(combinedEnd.diff(workEnd))
+          .asMinutes();
+      }
+
+      // Calculate just overtime -> I will assume 08:00 - 16:00 still counts as work time even though it's outside work hour, because minimum duration has to be 8 hours
+      durasi = workDurationInMinutes + overtimeDurationInMinutes;
+
+      // console.log(data);
+
+      if (mode.action === "add") {
+        addKegiatan();
+        setAddKegiatanModal(true);
+      } else if (mode.action === "edit") {
+        editKegiatan(idKegiatan);
+        setEditKegiatanModal(true);
+      }
 
       setTimeout(() => {
         onClose(true);
@@ -102,7 +213,7 @@ const TambahKegiatan = ({
     setJudulKegiatan("");
     setSelectedProject("");
     onClose(true);
-    setDropdownState(!dropdownState);
+    setDropdownState(false);
   };
 
   const handleDropdownState = () => {
@@ -110,8 +221,9 @@ const TambahKegiatan = ({
   };
 
   const handleSelectedProject = (project) => {
-    setSelectedProject(project);
-    setDropdownState(!dropdownState);
+    setIdProyek(project.idproyek);
+    setSelectedProject(project.namaproyek);
+    setDropdownState(false);
   };
 
   // Add Project
@@ -273,10 +385,10 @@ const TambahKegiatan = ({
                   {projectsList.map((project) => (
                     <div
                       onClick={() => handleSelectedProject(project)}
-                      key={project}
+                      key={project.idproyek}
                       className="cursor-pointer px-4 py-2 hover:bg-gray-200 rounded"
                     >
-                      {project}
+                      {project.namaproyek}
                     </div>
                   ))}
                 </div>

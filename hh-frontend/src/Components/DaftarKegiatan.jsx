@@ -39,35 +39,20 @@ const DaftarKegiatan = () => {
   };
 
   // Fetch Data
-  const [datas, setDatas] = useState([
-    {
-      judul: "wireframing untuk fitur/flow bidding",
-      namaProyek: "UI Desain",
-      tanggalMulai: "10/1/2023",
-      tanggalBerakhir: "10/1/2023",
-      waktuMulai: "08:00",
-      waktuBerakhir: "16:00",
-      durasi: "8 Jam",
-    },
-    {
-      judul: "Pembuatan desain sistem",
-      namaProyek: "Dokumentasi",
-      tanggalMulai: "10/2/2023",
-      tanggalBerakhir: "10/3/2023",
-      waktuMulai: "08:50",
-      waktuBerakhir: "17:30",
-      durasi: "8 Jam 40 menit",
-    },
-    {
-      judul: "desain mockup untuk fitur/flow bidding",
-      namaProyek: "UI Desain",
-      tanggalMulai: "10/3/2023",
-      tanggalBerakhir: "10/10/2023",
-      waktuMulai: "10:30",
-      waktuBerakhir: "15:00",
-      durasi: "4 Jam 30 menit",
-    },
-  ]);
+  const [datas, setDatas] = useState([]);
+  useEffect(() => {
+    fetchData();
+  }, [datas]);
+
+  const fetchData = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/v1/kegiatan");
+      setDatas(res.data);
+      // console.log(res.data);
+    } catch (error) {
+      console.log(`Error fetching data: ${error.message}`);
+    }
+  };
 
   // Fetch Project
   const [projects, setProjects] = useState([]);
@@ -78,7 +63,7 @@ const DaftarKegiatan = () => {
   const fetchProjects = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/v1/proyek");
-      setProjects(res.data.map((p) => p.namaproyek));
+      setProjects(res.data);
     } catch (error) {
       console.log(`Error fetching project: ${error.message}`);
     }
@@ -105,8 +90,8 @@ const DaftarKegiatan = () => {
     handleCloseFilterModal();
   };
 
-  const [currentActivity, setCurrentActivity] = useState(null);
-  const [mode, setMode] = useState("add");
+  const [currentActivity, setCurrentActivity] = useState([]);
+  const [mode, setMode] = useState({ action: "add", key: Date.now() });
 
   // Modal Config
   const [deleteKegiatanModal, setDeleteKegiatanMod] = useState(false);
@@ -114,7 +99,7 @@ const DaftarKegiatan = () => {
   // Add kegiatan
   const [isAddKegiatanOpen, setIsAddKegiatanOpen] = useState(false);
   const handleOpenAddKegiatan = () => {
-    setMode("add");
+    setMode({ action: "add", key: Date.now() });
     setCurrentActivity(null);
     setIsAddKegiatanOpen(true);
   };
@@ -125,46 +110,60 @@ const DaftarKegiatan = () => {
 
   // Edit Kegiatan
   const handleOpenEditKegiatan = (data) => {
-    console.log(data);
-    setMode("edit");
+    setMode({ action: "edit", key: Date.now() });
     setCurrentActivity(data);
     setIsAddKegiatanOpen(true);
   };
 
   // Delete Kegiatan
+  const deleteKegiatan = async (idKegiatan) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/v1/kegiatan/${idKegiatan}`);
+      setDatas(datas.filter((data) => data.idKegiatan !== idKegiatan));
+    } catch (error) {
+      console.log(`Error deleting kegiatan: ${error.message}`);
+    }
+  };
   const handleDeleteKegiatan = (data) => {
     setDeleteKegiatanMod(true);
     setTimeout(() => {
-      const updatedDatas = datas.filter((item) => item !== data);
-      setFilteredData(updatedDatas);
-      setDatas(updatedDatas);
-
+      deleteKegiatan(data.idkegiatan);
       setDeleteKegiatanMod(false);
     }, 2000);
   };
 
   // Search data
   const [searchList, setSearchList] = useState("");
-  const [filteredData, setFilteredData] = useState(datas);
+  const [filteredData, setFilteredData] = useState([]);
   const handleSearchInput = (event) => {
     setSearchList(event.target.value);
   };
 
-  useEffect(() => {
-    if (filterApplied > 0) {
-      setFilteredData(
-        filteredData.filter((data) =>
-          data.judul.toLowerCase().includes(searchList.toLowerCase())
-        )
-      );
-    } else {
-      setFilteredData(
-        datas.filter((data) =>
-          data.judul.toLowerCase().includes(searchList.toLowerCase())
-        )
-      );
-    }
-  }, []);
+  // useEffect(() => {
+  //   console.log(datas);
+  //   console.log(filteredData);
+  //   console.log(datas);
+  //   if (filterApplied > 0) {
+  //     setFilteredData(
+  //       filteredData.filter((data) =>
+  //         data.judul.toLowerCase().includes(searchList.toLowerCase())
+  //       )
+  //     );
+  //   } else {
+  //     setFilteredData(
+  //       datas.map((data) =>
+  //         data.filter((item) =>
+  //           item
+  //         )
+  //       )
+  //     );
+  //   }
+  // }, [searchList]);
+  // useEffect(() => {
+  //   setFilteredData(
+  //     datas.map((data) => data.judulkegiatan.toLowerCase().includes(searchList.toLowerCase()))
+  //   )
+  // }, [searchList])
 
   // Sort table data
   const [sortDatas, setSortDatas] = useState({ key: null, direction: null });
@@ -356,10 +355,9 @@ const DaftarKegiatan = () => {
                       </td>
                     </tr>
                   ) : (
-                    filteredData.map((data, index) => (
+                    datas.map((data) => (
                       <ItemData
-                        key={index}
-                        index={index}
+                        index={data.idkegiatan}
                         data={data}
                         onEdit={handleOpenEditKegiatan}
                         onDelete={handleDeleteKegiatan}

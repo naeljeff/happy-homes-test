@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoMdArrowDropdown } from "react-icons/io";
 
 const FilterProject = ({ isOpen, onClose, projects, onApplyFilter }) => {
@@ -54,7 +54,7 @@ const FilterProject = ({ isOpen, onClose, projects, onApplyFilter }) => {
                   {selectedProjects.length > 0 ? (
                     selectedProjects.map((project) => (
                       <span
-                        key={project}
+                        key={project.idproyek}
                         className="flex items-center bg-gray-200 text-gray-700 font-semibold tracking-tighter p-1 pr-3 rounded-full mr-2"
                       >
                         <button
@@ -64,7 +64,7 @@ const FilterProject = ({ isOpen, onClose, projects, onApplyFilter }) => {
                         >
                           &times;
                         </button>
-                        {project}
+                        {project.namaproyek}
                       </span>
                     ))
                   ) : (
@@ -85,10 +85,10 @@ const FilterProject = ({ isOpen, onClose, projects, onApplyFilter }) => {
                   {projects.map((project) => (
                     <div
                       onClick={() => handleSelectProject(project)}
-                      key={project}
+                      key={project.idproyek}
                       className="cursor-pointer px-4 py-2 hover:bg-gray-200 rounded"
                     >
-                      {project}
+                      {project.namaproyek}
                     </div>
                   ))}
                 </div>
