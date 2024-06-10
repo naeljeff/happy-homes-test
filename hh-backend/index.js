@@ -18,7 +18,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // User
-app.get('/user', async (req, res) => {
+app.get('/api/v1/user', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM tabel_user WHERE idUser = 1');
         res.json(result.rows);
@@ -28,7 +28,7 @@ app.get('/user', async (req, res) => {
     }
 });
 
-app.put('/user/:idUser', async (req, res) => {
+app.put('/api/v1/user/:idUser', async (req, res) => {
     try {
         const { idUser } = req.params;
         const { nama, rate } = req.body;
@@ -45,6 +45,29 @@ app.put('/user/:idUser', async (req, res) => {
     }
 });
 
+// Proyek
+app.get('/api/v1/proyek', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM tabel_proyek');
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+})
+
+app.post('/api/v1/proyek', async (req, res) => {
+    try {
+        const { namaProyek } = req.body;
+        const result = await pool.query('INSERT INTO tabel_proyek (namaProyek) VALUES ($1) RETURNING *', [namaProyek]);
+        res.json(result.rows[0]);
+        console.log(result.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+})
+
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.log(`Happy Home server is running on port ${port}`);
 });

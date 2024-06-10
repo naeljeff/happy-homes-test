@@ -1,12 +1,44 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const TambahProject = ({ isOpen, onClose }) => {
   const [project, setProject] = useState("");
+  const [projectsList, setProjectsList] = useState([]);
+
+  // Fetch project
+  useEffect(() => {
+    fetchProjects();
+  }, [projectsList]);
+
+  const fetchProjects = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/v1/proyek");
+      setProjectsList(res.data);
+    } catch (error) {
+      console.log(`Error fetching project: ${error.message}`);
+    }
+  };
+
+  const addProject = async () => {
+    const namaProyek = project;
+    try {
+      const res = await axios.post("http://localhost:5000/api/v1/proyek", {
+        namaProyek,
+      });
+      // console.log(res.data);
+    } catch (error) {
+      console.log(`Error adding new project: ${error.message}`);
+    }
+  };
 
   //   Add handle save project -> close project on save
   const handleAddProject = () => {
+    console.log(projectsList);
     if (!project) alert("Nama proyek tidak boleh kosong");
-    else {
+    else if (projectsList.some((p) => p.namaproyek === project)) {
+      alert("Nama proyek sudah ada");
+    } else {
+      addProject();
       console.log(project); // Nanti jadi add to db
       setProject("");
       onClose(true);

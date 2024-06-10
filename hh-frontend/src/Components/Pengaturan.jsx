@@ -15,19 +15,26 @@ const Pengaturan = () => {
   }, []);
 
   const fetchUser = async () => {
-    const res = await axios.get("http://localhost:5000/user");
-    console.log(res.data);
-    setNama(res.data[0].nama);
-    setRate(formatNumber(parseInt(res.data[0].rate).toString()));
+    try {
+      const res = await axios.get("http://localhost:5000/api/v1/user");
+      // console.log(res.data);
+      setNama(res.data[0].nama);
+      setRate(formatNumber(parseInt(res.data[0].rate).toString()));
+    } catch (error) {
+      console.error("Error getting user:", error);
+    }
   };
 
   const updateUser = async (idUser) => {
     const numericRate = parseFloat(rate.replace(/,/g, ""));
     try {
-      const res = await axios.put(`http://localhost:5000/user/${idUser}`, {
-        nama,
-        rate: numericRate,
-      });
+      const res = await axios.put(
+        `http://localhost:5000/api/v1/user/${idUser}`,
+        {
+          nama,
+          rate: numericRate,
+        }
+      );
       setNama(nama);
       setRate(rate);
       console.log("Update response:", res.data);

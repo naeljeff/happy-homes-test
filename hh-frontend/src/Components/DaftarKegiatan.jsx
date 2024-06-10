@@ -11,9 +11,34 @@ import TambahKegiatan from "./TambahKegiatan";
 import DeleteKegiatanModal from "../Modal/ModalSubmitSuccess";
 
 const DaftarKegiatan = () => {
-  // Add logic to fetch data from database -> setDatas
-  
+  // Fetch User
+  const [nama, setNama] = useState("");
+  const [rate, setRate] = useState("");
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
+  const fetchUser = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/v1/user");
+      // console.log(res.data);
+      setNama(res.data[0].nama);
+
+      const tempRate = Math.round(parseFloat(res.data[0].rate));
+      setRate(formatNumber(tempRate.toString()));
+    } catch (error) {
+      console.error("Error getting user:", error);
+    }
+  };
+
+  const formatNumber = (value) => {
+    if (!value) return value;
+    const parts = value.split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return parts.join(".");
+  };
+
+  // Fetch Data
   const [datas, setDatas] = useState([
     {
       judul: "wireframing untuk fitur/flow bidding",
@@ -43,24 +68,22 @@ const DaftarKegiatan = () => {
       durasi: "4 Jam 30 menit",
     },
   ]);
-  const [nama, setNama] = useState("");
-  const [rate, setRate] = useState("");
-  // Grab data from DB
+
+  // Fetch Project
+  const [projects, setProjects] = useState([]);
   useEffect(() => {
-    fetchUser();
-  }, []);
+    fetchProjects();
+  }, [projects]);
 
-  const fetchUser = async () => {
-    const res = await axios.get("http://localhost:5000/user");
-    console.log(res.data)
-    setNama(res.data[0].nama);
-
-    const tempRate = Math.round(parseFloat(res.data[0].rate))
-    setRate(tempRate);
+  const fetchProjects = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/v1/proyek");
+      setProjects(res.data.map((p) => p.namaproyek));
+    } catch (error) {
+      console.log(`Error fetching project: ${error.message}`);
+    }
   };
 
-  // DUMMY
-  const [projects] = useState(["UI Desain", "Desain Logo"]);
   // Filter
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [filterApplied, setFilteredApplied] = useState(0);
